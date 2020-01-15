@@ -125,6 +125,53 @@
         
         <div class="level article-meta is-size-7 is-uppercase is-mobile is-overflow-x-auto">
             <div class="level-left">
+                <time class="level-item has-text-grey" datetime="2020-01-15T02:07:09.019Z">2020-01-15</time>
+                
+                <div class="level-item">
+                <a class="has-link-grey -link" href="/categories/spring/">spring</a>
+                </div>
+                
+                
+                <span class="level-item has-text-grey">
+                    
+                    
+                    2 分钟 读完 (大约 244 个字)
+                </span>
+                
+                
+            </div>
+        </div>
+        
+        <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
+            
+                <a class="has-link-black-ter" href="/2020/01/15/spring/101/">Hello World</a>
+            
+        </h1>
+        <div class="content">
+            <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><span class="line">public WebApplicationContext initWebApplicationContext(ServletContext servletContext) &#123;</span><br><span class="line">    &#x2F;&#x2F;保证只有一个WebApplicationContext</span><br><span class="line">    &#x2F;&#x2F;从ServletContext查找WebApplicationContext实例,如果已经存在,则抛出异常</span><br><span class="line">    &#x2F;&#x2F;典型异常:在web.xml中配置了不止一个ContextLoaderListener,造成多次初始化</span><br><span class="line">    if (servletContext.getAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE) !&#x3D; null) &#123;</span><br><span class="line">        throw new IllegalStateException(&quot;Cannot initialize context because there is already a root application context present - check whether you have multiple ContextLoader* definitions in your web.xml!&quot;);</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">        servletContext.log(&quot;Initializing Spring root WebApplicationContext&quot;);</span><br><span class="line">        Log logger &#x3D; LogFactory.getLog(ContextLoader.class);</span><br><span class="line">        if (logger.isInfoEnabled()) &#123;</span><br><span class="line">            logger.info(&quot;Root WebApplicationContext: initialization started&quot;);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        long startTime &#x3D; System.currentTimeMillis();</span><br><span class="line"></span><br><span class="line">        try &#123;</span><br><span class="line">            if (this.context &#x3D;&#x3D; null) &#123;</span><br><span class="line">                &#x2F;&#x2F;创建WebApplicationContext实例,其实这里创建的是它的子类ConfigurableWebApplicationContext</span><br><span class="line">                this.context &#x3D; this.createWebApplicationContext(servletContext);</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            if (this.context instanceof ConfigurableWebApplicationContext) &#123;</span><br><span class="line">                ConfigurableWebApplicationContext cwac &#x3D; (ConfigurableWebApplicationContext)this.context;</span><br><span class="line">                if (!cwac.isActive()) &#123;</span><br><span class="line">                    if (cwac.getParent() &#x3D;&#x3D; null) &#123;</span><br><span class="line">                        ApplicationContext parent &#x3D; this.loadParentContext(servletContext);</span><br><span class="line">                        cwac.setParent(parent);</span><br><span class="line">                    &#125;</span><br><span class="line"></span><br><span class="line">                    this.configureAndRefreshWebApplicationContext(cwac, servletContext);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            servletContext.setAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, this.context);</span><br><span class="line">            ClassLoader ccl &#x3D; Thread.currentThread().getContextClassLoader();</span><br><span class="line">            if (ccl &#x3D;&#x3D; ContextLoader.class.getClassLoader()) &#123;</span><br><span class="line">                currentContext &#x3D; this.context;</span><br><span class="line">            &#125; else if (ccl !&#x3D; null) &#123;</span><br><span class="line">                currentContextPerThread.put(ccl, this.context);</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            if (logger.isInfoEnabled()) &#123;</span><br><span class="line">                long elapsedTime &#x3D; System.currentTimeMillis() - startTime;</span><br><span class="line">                logger.info(&quot;Root WebApplicationContext initialized in &quot; + elapsedTime + &quot; ms&quot;);</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            return this.context;</span><br><span class="line">        &#125; catch (Error | RuntimeException var8) &#123;</span><br><span class="line">            logger.error(&quot;Context initialization failed&quot;, var8);</span><br><span class="line">            servletContext.setAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, var8);</span><br><span class="line">            throw var8;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+        </div>
+        
+        
+        
+    </div>
+</div>
+
+
+
+
+
+
+
+
+    
+<div class="card">
+    
+    <div class="card-content article ">
+        
+        <div class="level article-meta is-size-7 is-uppercase is-mobile is-overflow-x-auto">
+            <div class="level-left">
                 <time class="level-item has-text-grey" datetime="2020-01-13T07:31:21.576Z">2020-01-13</time>
                 
                 <div class="level-item">
@@ -209,7 +256,7 @@
                     </p>
                     <a href="/archives">
                         <p class="title has-text-weight-normal">
-                            1
+                            2
                         </p>
                     </a>
                 </div>
@@ -221,7 +268,7 @@
                     </p>
                     <a href="/categories">
                         <p class="title has-text-weight-normal">
-                            1
+                            2
                         </p>
                     </a>
                 </div>
@@ -259,6 +306,14 @@
         <a class="level is-marginless" href="/categories/java/">
             <span class="level-start">
                 <span class="level-item">java</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/spring/">
+            <span class="level-start">
+                <span class="level-item">spring</span>
             </span>
             <span class="level-end">
                 <span class="level-item tag">1</span>
@@ -308,6 +363,18 @@
         <article class="media">
             <div class="media-content">
                 <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-01-15T02:07:09.019Z">2020-01-15</time></div>
+                    <a href="/2020/01/15/spring/101/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Hello World</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/spring/">spring</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            <div class="media-content">
+                <div class="content">
                     <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-01-13T07:31:21.576Z">2020-01-13</time></div>
                     <a href="/2020/01/13/hello-word/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Hello World</a>
                     <p class="is-size-7 is-uppercase">
@@ -334,7 +401,7 @@
                     <span class="level-item">一月 2020</span>
                 </span>
                 <span class="level-end">
-                    <span class="level-item tag">1</span>
+                    <span class="level-item tag">2</span>
                 </span>
             </a>
         </li>
@@ -377,6 +444,18 @@
         <article class="media">
             <div class="media-content">
                 <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-01-15T02:07:09.019Z">2020-01-15</time></div>
+                    <a href="/2020/01/15/spring/101/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Hello World</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/spring/">spring</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            <div class="media-content">
+                <div class="content">
                     <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-01-13T07:31:21.576Z">2020-01-13</time></div>
                     <a href="/2020/01/13/hello-word/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Hello World</a>
                     <p class="is-size-7 is-uppercase">
@@ -403,7 +482,7 @@
                     <span class="level-item">一月 2020</span>
                 </span>
                 <span class="level-end">
-                    <span class="level-item tag">1</span>
+                    <span class="level-item tag">2</span>
                 </span>
             </a>
         </li>
