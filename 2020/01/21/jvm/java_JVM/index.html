@@ -7,19 +7,19 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
 
-<title>Java JVM - 海清</title>
+<title>深入了解Java内存模型 - 海清</title>
 
 
-    <meta name="description" content="1 : java 内存区域">
+    <meta name="description" content="线程与JVM java内存区域与java内存模型的区别 硬件内存架构与java内存模型 java内存模型对并发特征的保证">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Java JVM">
+<meta property="og:title" content="深入了解Java内存模型">
 <meta property="og:url" content="http://yoursite.com/2020/01/21/jvm/java_JVM/index.html">
 <meta property="og:site_name" content="海清">
-<meta property="og:description" content="1 : java 内存区域">
+<meta property="og:description" content="线程与JVM java内存区域与java内存模型的区别 硬件内存架构与java内存模型 java内存模型对并发特征的保证">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://yoursite.com/images/og_image.png">
 <meta property="article:published_time" content="2020-01-21T07:48:23.353Z">
-<meta property="article:modified_time" content="2020-01-21T07:57:15.954Z">
+<meta property="article:modified_time" content="2020-01-21T09:13:47.828Z">
 <meta property="article:author" content="他的海晏河清">
 <meta property="article:tag" content="spring">
 <meta name="twitter:card" content="summary">
@@ -81,7 +81,7 @@
         <div class="navbar-brand is-flex-center">
             <a class="navbar-item navbar-logo" href="/">
             
-                <img src="/images/log.png" alt="Java JVM" height="28">
+                <img src="/images/log.png" alt="深入了解Java内存模型" height="28">
             
             </a>
         </div>
@@ -136,7 +136,7 @@
                 <span class="level-item has-text-grey">
                     
                     
-                    5 分钟 读完 (大约 726 个字)
+                    6 分钟 读完 (大约 827 个字)
                 </span>
                 
                 
@@ -145,65 +145,129 @@
         
         <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
             
-                Java JVM
+                深入了解Java内存模型
             
         </h1>
         <div class="content">
-            <h4 id="1-java-内存区域"><a href="#1-java-内存区域" class="headerlink" title="1 : java 内存区域"></a>1 : java 内存区域</h4><a id="more"></a>
-<p><img src="images/jvm001.png" alt=""></p>
-<p>方法区 : 类信息,常量,static,JIT;    (信息共享) </p>
-<p>java 堆区 : 实例对象  , GC; (信息共享)</p>
-<p>VM Stack : java  方法在运行的内存模型</p>
-<p><img src="images/jvm002.png" alt=""></p>
-<p>PC : java 线程的私有数据,这个数据就是执行下一条指令的地址</p>
-<h4 id="2-java-内存模型-JMM-规范-抽象的模型"><a href="#2-java-内存模型-JMM-规范-抽象的模型" class="headerlink" title="2.java 内存模型  JMM( 规范,抽象的模型)"></a>2.java 内存模型  JMM( 规范,抽象的模型)</h4><p><img src="images/jvm004.png" alt=""></p>
-<p> 主内存:  共享的信息</p>
-<p>工作类存 : 私有的信息 ,基本的数据类型,直接存放在工作空间,引用数据类型,引用的地址放在工作空间,引用的对象放在堆中</p>
-<p>工作方式 : </p>
-<p>​        A :  线程修改私有的数据 ,直接在工作空间修改</p>
-<p>​        B : 线程修改共享数据, 先把数据复制到工作空间,在工作空间进行修改,修改完成以后再刷新主存区的数据</p>
-<h4 id="3-硬件内存架构与java-内存模型"><a href="#3-硬件内存架构与java-内存模型" class="headerlink" title="3.硬件内存架构与java 内存模型"></a>3.硬件内存架构与java 内存模型</h4><h6 id="硬件架构"><a href="#硬件架构" class="headerlink" title="硬件架构 :"></a>硬件架构 :</h6><p>​    a : CPU 缓存的一致性问题 : 并发处理的不同步</p>
-<p>​    b : 解决方案 :</p>
-<p>​            总线加锁()  降低cpu 的吞吐量</p>
-<p>​            缓存上的一致性协议(MESI)</p>
-<p>​                         当cpu 在 cache 中 操作数据行, 如果该数据是共享变量 ,数据在cache 读到寄存器中, 进行修改,并更                新内存数据,</p>
-<p>​                cache line 置无效,其它的cup就从内存中去读取数据</p>
-<h6 id="java-内存模型与硬件架构的关系"><a href="#java-内存模型与硬件架构的关系" class="headerlink" title="java 内存模型与硬件架构的关系"></a>java 内存模型与硬件架构的关系</h6><p>​    <img src="images/jvm005.png" alt=""></p>
+            <ul>
+<li>线程与JVM</li>
+<li>java内存区域与java内存模型的区别</li>
+<li>硬件内存架构与java内存模型</li>
+<li>java内存模型对并发特征的保证</li>
+</ul>
+<a id="more"></a>
+
+<p>​    基本概念：</p>
+<p>​    程序：代码，完成某一件任务，代码序列（静态的概念）</p>
+<p>​    进程：程序在某些数据上的一次运行（动态的概念）</p>
+<p>​    线程：一个进程可能包含一个或多个线程（占有资源的独立单元）</p>
+<h2 id="java-内存区域"><a href="#java-内存区域" class="headerlink" title="java 内存区域"></a>java 内存区域</h2><h2 id><a href="#" class="headerlink" title></a><img src="/2020/01/21/jvm/java_JVM/jvm001.png" alt></h2><ul>
+<li><p>方法区 : 类信息,常量,static,JIT;    (信息共享) </p>
+</li>
+<li><p>java 堆区 : 实例对象  , GC; (信息共享)</p>
+</li>
+<li><p>VM Stack : java  方法在运行的内存模型</p>
+</li>
+</ul>
+<p><img src="/2020/01/21/jvm/java_JVM/jvm002.png" alt></p>
+<ul>
+<li>PC : java 线程的私有数据,这个数据就是执行下一条指令的地址</li>
+</ul>
+<h2 id="java-内存模型-JMM-规范-抽象的模型"><a href="#java-内存模型-JMM-规范-抽象的模型" class="headerlink" title="java 内存模型  JMM( 规范,抽象的模型)"></a>java 内存模型  JMM( 规范,抽象的模型)</h2><p><img src="/2020/01/21/jvm/java_JVM/jvm004.png" alt></p>
+<ul>
+<li><p>主内存:  共享的信息</p>
+</li>
+<li><p>工作类存 : 私有的信息 ,基本的数据类型,直接存放在工作空间,引用数据类型,引用的地址放在工作空间,引用的对象放在堆中</p>
+</li>
+<li><p>工作方式 :</p>
+<ul>
+<li>线程修改私有的数据 ,直接在工作空间修改 </li>
+<li>线程修改共享数据, 先把数据复制到工作空间,在工作空间进行修改,修改完成以后再刷新主存区的数据</li>
+</ul>
+</li>
+</ul>
+<h2 id="硬件内存架构与java-内存模型"><a href="#硬件内存架构与java-内存模型" class="headerlink" title="硬件内存架构与java 内存模型"></a>硬件内存架构与java 内存模型</h2><h4 id="硬件架构"><a href="#硬件架构" class="headerlink" title="硬件架构 :"></a>硬件架构 :</h4><ul>
+<li><p>​     CPU 缓存的一致性问题 : 并发处理的不同步</p>
+</li>
+<li><p>​    解决方案 :</p>
+<ul>
+<li>总线加锁 , 降低cpu 的吞吐量</li>
+<li>缓存上的一致性协议(MESI)<ul>
+<li>当cpu 在 cache 中 操作数据行, 如果该数据是共享变量 ,数据在cache 读到寄存器中, 进行修改,并更新内存数据,cache line 置无效,其它的cup就从内存中去读取数据</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h4 id="java-内存模型与硬件架构的关系"><a href="#java-内存模型与硬件架构的关系" class="headerlink" title="java 内存模型与硬件架构的关系"></a>java 内存模型与硬件架构的关系</h4><p>​    <img src="/2020/01/21/jvm/java_JVM/jvm005.png" alt></p>
 <p>​    交叉  : 数据的不一致        </p>
-<h4 id="4-并发编程的三个重要的特性"><a href="#4-并发编程的三个重要的特性" class="headerlink" title="4. 并发编程的三个重要的特性"></a>4. 并发编程的三个重要的特性</h4><p>​       原子性:  不可分割</p>
-<p>​       可见性: 线程只能操作自己工作空间的数据</p>
-<p>​       有序性: 程序中的顺序不一定就是执行的顺序</p>
-<p>​                 编译重排序</p>
-<p>​                 指定重排序</p>
-<p>​                 提高效率  (和指令操作的时间有关系)</p>
-<p>​            重排规则 as-if-seria : 单线程中重排不影响执行的结果</p>
-<p>​                            happens-before :</p>
-<h4 id="5-JMM对三个特征到的保证"><a href="#5-JMM对三个特征到的保证" class="headerlink" title="5. JMM对三个特征到的保证"></a>5. JMM对三个特征到的保证</h4><h6 id="1-JMM-与原子性"><a href="#1-JMM-与原子性" class="headerlink" title="1) .JMM 与原子性"></a>1) .JMM 与原子性</h6><p>​            a). x =10 写 原子性   如果是私有数据,具有原子性,如果是共享数据没有原子性</p>
-<p>​            b) .y=x</p>
-<p>​                  把数据x 读到工作空间 (原子性)    </p>
-<p>​                  把 x 的值写到y (原子性)</p>
-<p>​           c)  i++  没有原子性</p>
-<p>​               读 i 到工作空间,</p>
-<p>​               +1,</p>
-<p>​               刷新结果到内存</p>
-<p>​         d) Z=z+1 没有原子性</p>
-<p>​              读  z到工作空间,</p>
-<p>​               +1,</p>
-<p>​               刷新结果到内存</p>
-<p>​        多个原子性操作合并到一起没有原子性 </p>
-<p>​        保证方式 : </p>
-<p>​            synchronized</p>
-<p>​            JUC : Lock 的 lock</p>
-<h6 id="2-JMM与可见性"><a href="#2-JMM与可见性" class="headerlink" title="2)  . JMM与可见性"></a>2)  . JMM与可见性</h6><p>​        Volatile : 在JMM模式上实现 EMSI协议</p>
-<p>​        synchronized : 加锁</p>
-<p>​         JUC : Lock 的 lock</p>
-<h6 id="3-JMM有序性"><a href="#3-JMM有序性" class="headerlink" title="-3) .JMM有序性"></a>-3) .JMM有序性</h6><p>​        Volatile</p>
-<p>​        synchronized </p>
-<p>​    Happens-before原则：</p>
-<p>​            程序次序原则</p>
-<p>​            锁定原则  ：后一次加锁必须等前一次解锁</p>
-<p>​             Volatile原则：霸道原则</p>
-<p>​            传递原则：A—B —C   A–C</p>
+<h2 id="并发编程的三个重要的特性"><a href="#并发编程的三个重要的特性" class="headerlink" title="并发编程的三个重要的特性"></a>并发编程的三个重要的特性</h2><ul>
+<li><p>​       原子性:  不可分割</p>
+</li>
+<li><p>​       可见性: 线程只能操作自己工作空间的数据</p>
+</li>
+<li><p>​       有序性: 程序中的顺序不一定就是执行的顺序</p>
+<ul>
+<li>编译重排序</li>
+<li>指令重排序<ul>
+<li>提高效率  (和指令操作的时间有关系)</li>
+<li>重排规则 <ul>
+<li>as-if-seria : 单线程中重排不影响执行的结果</li>
+<li>happens-before :</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="JMM对三个特征到的保证"><a href="#JMM对三个特征到的保证" class="headerlink" title="JMM对三个特征到的保证"></a>JMM对三个特征到的保证</h2><h4 id="1-JMM-与原子性"><a href="#1-JMM-与原子性" class="headerlink" title="1) .JMM 与原子性"></a>1) .JMM 与原子性</h4><ul>
+<li><p>​            x =10 写 原子性   如果是私有数据,具有原子性,如果是共享数据没有原子性</p>
+</li>
+<li><p>​            y=x   (没有原子性)</p>
+<ol>
+<li>把数据x 读到工作空间 (原子性),    </li>
+<li>把 x 的值写到y (原子性),</li>
+</ol>
+</li>
+<li><p>​            i++   (没有原子性)</p>
+<ol>
+<li>读 i 到工作空间,   </li>
+<li>+1,    </li>
+<li>刷新结果到内存</li>
+</ol>
+</li>
+<li><p>​            Z=z+1 (没有原子性)   </p>
+<ol>
+<li><p>读  z到工作空间, </p>
+</li>
+<li><p>+1,  </p>
+</li>
+<li><p>刷新结果到内存</p>
+<p>多个原子性操作合并到一起没有原子性 保证方式 : synchronized ,    JUC : Lock 的 lock</p>
+</li>
+</ol>
+</li>
+</ul>
+<h4 id="2-JMM与可见性"><a href="#2-JMM与可见性" class="headerlink" title="2)  . JMM与可见性"></a>2)  . JMM与可见性</h4><ul>
+<li><p>​        Volatile : 在JMM模式上实现 EMSI协议</p>
+</li>
+<li><p>​        synchronized : 加锁</p>
+</li>
+<li><p>​         JUC : Lock 的 lock</p>
+</li>
+</ul>
+<h4 id="3-JMM有序性"><a href="#3-JMM有序性" class="headerlink" title="-3) .JMM有序性"></a>-3) .JMM有序性</h4><ul>
+<li>​    Volatile</li>
+<li>synchronized </li>
+<li>Happens-before原则：<ul>
+<li>程序次序原则</li>
+<li>锁定原则  ：后一次加锁必须等前一次解锁</li>
+<li>Volatile原则：霸道原则</li>
+<li>传递原则：A—B —C   A–C</li>
+</ul>
+</li>
+</ul>
 
         </div>
         
@@ -403,7 +467,7 @@
             <div class="media-content">
                 <div class="content">
                     <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-01-21T07:48:23.353Z">2020-01-21</time></div>
-                    <a href="/2020/01/21/jvm/java_JVM/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Java JVM</a>
+                    <a href="/2020/01/21/jvm/java_JVM/" class="title has-link-black-ter is-size-6 has-text-weight-normal">深入了解Java内存模型</a>
                     <p class="is-size-7 is-uppercase">
                         <a class="has-link-grey -link" href="/categories/JVM/">JVM</a>
                     </p>
@@ -501,7 +565,7 @@
             <div class="level-start has-text-centered-mobile">
                 <a class="footer-logo is-block has-mb-6" href="/">
                 
-                    <img src="/images/log.png" alt="Java JVM" height="28">
+                    <img src="/images/log.png" alt="深入了解Java内存模型" height="28">
                 
                 </a>
                 <p class="is-size-7">
