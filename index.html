@@ -125,6 +125,118 @@
         
         <div class="level article-meta is-size-7 is-uppercase is-mobile is-overflow-x-auto">
             <div class="level-left">
+                <time class="level-item has-text-grey" datetime="2020-03-03T03:49:09.395Z">2020-03-03</time>
+                
+                
+                <span class="level-item has-text-grey">
+                    
+                    
+                    4 分钟 读完 (大约 551 个字)
+                </span>
+                
+                
+            </div>
+        </div>
+        
+        <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
+            
+                <a class="has-link-black-ter" href="/2020/03/03/spring/IOC/springIOC1/">spring/IOC/springIOC1</a>
+            
+        </h1>
+        <div class="content">
+            <h3 id="springIOC-1"><a href="#springIOC-1" class="headerlink" title="springIOC(1)"></a>springIOC(1)</h3><p>控制反转（Inversion of Control，缩写为IoC），是面向对象编程中的一种设计原则，可以用来减低计算机代码之间的耦合度。其中最常见的方式叫做依赖注入（Dependency Injection，简称<strong>DI</strong>），还有一种方式叫“依赖查找”（Dependency <strong>Lookup</strong>）,  DI就是实现IOC的一种技术手段;</p>
+<h3 id="spring编程的风格"><a href="#spring编程的风格" class="headerlink" title="spring编程的风格"></a>spring编程的风格</h3><ul>
+<li><p>schemal-based——-xml</p>
+</li>
+<li><p>annotation-based—–annotation</p>
+</li>
+<li><p>java-based—-java Configuration</p>
+<p>三者的混合使用</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="meta">@ImportResource</span>(<span class="string">"classpath:spring-config.xml"</span>)</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyConfig</span> </span>&#123;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+</li>
+</ul>
+<h3 id="关于xml"><a href="#关于xml" class="headerlink" title="关于xml"></a>关于xml</h3><ol>
+<li><p>component-scan的使用</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">context:component-scan</span> <span class="attr">base-package</span>=<span class="string">"org.liuyuqi"</span>/&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>配置了component-scan无需再配置以下配置</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">context:annotation-config</span>/&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>配置component-scan 之后自动开启注解配置</p>
+</li>
+<li><p>:p的使用 简化property</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">xmlns:p="http://www.springframework.org/schema/p"</span><br><span class="line"> <span class="tag">&lt;<span class="name">bean</span> <span class="attr">name</span>=<span class="string">"impl"</span>  <span class="attr">class</span>=<span class="string">"org.liuyuqi.IndexImpl"</span>/&gt;</span></span><br><span class="line"> <span class="tag">&lt;<span class="name">bean</span> <span class="attr">name</span>=<span class="string">"service"</span> <span class="attr">class</span>=<span class="string">"org.liuyuqi.IndexService"</span> <span class="attr">p:indexDao-ref</span>=<span class="string">"impl"</span>&gt;</span> <span class="tag">&lt;/<span class="name">bean</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>可以简化依赖关系的描述,在不使用:p的情况下为以下</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">bean</span> <span class="attr">name</span>=<span class="string">"impl"</span>  <span class="attr">class</span>=<span class="string">"org.liuyuqi.IndexImpl"</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">bean</span> <span class="attr">name</span>=<span class="string">"service"</span> <span class="attr">class</span>=<span class="string">"org.liuyuqi.IndexService"</span> &gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"indexDao"</span> <span class="attr">ref</span>=<span class="string">"impl"</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">bean</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>当然java类中也要描述依赖的关系</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> IndexDao indexDao;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setIndexDao</span><span class="params">(IndexDao indexDao)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.indexDao = indexDao;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+
+
+</li>
+</ol>
+<ol start="3">
+<li><p>:c的使用 简化constructor</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"> xmlns:c="http://www.springframework.org/schema/c"</span><br><span class="line"></span><br><span class="line"> <span class="tag">&lt;<span class="name">bean</span> <span class="attr">name</span>=<span class="string">"impl"</span>  <span class="attr">class</span>=<span class="string">"org.liuyuqi.IndexImpl"</span>/&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">bean</span> <span class="attr">name</span>=<span class="string">"service"</span> <span class="attr">class</span>=<span class="string">"org.liuyuqi.IndexService"</span> <span class="attr">c:indexDao-ref</span>=<span class="string">"impl"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">bean</span>&gt;</span></span><br><span class="line"></span><br><span class="line">可以简化依赖关系的描述,在不使用:c的情况下为以下</span><br><span class="line"></span><br><span class="line"> <span class="tag">&lt;<span class="name">bean</span> <span class="attr">name</span>=<span class="string">"service"</span> <span class="attr">class</span>=<span class="string">"org.liuyuqi.IndexService"</span> &gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">constructor-arg</span> <span class="attr">name</span>=<span class="string">"indexDao"</span> <span class="attr">ref</span>=<span class="string">"impl"</span>/&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">bean</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>java类中描述依赖的关系</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> IndexDao indexDao;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">IndexService</span><span class="params">(IndexDao indexDao)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.indexDao = indexDao;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+
+
+</li>
+</ol>
+<h3 id="spring-中的自动装配"><a href="#spring-中的自动装配" class="headerlink" title="spring 中的自动装配"></a>spring 中的自动装配</h3><h4 id="xml配置"><a href="#xml配置" class="headerlink" title="xml配置 :"></a>xml配置 :</h4><p>​     IOC的注入有两个地方需要提供依赖关系，一是类的定义中，二是在spring的配置中需要去描述。自动装配则把第二个取消了，即我们仅仅需要在类中提供依赖，继而把对象交给容器管理即可完成注入。</p>
+<ol>
+<li><p>根据类型匹配</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">default-autowire&#x3D;&quot;byType</span><br></pre></td></tr></table></figure>
+
+<p>值得注意的是当类型有相同的实现类实现dao得时候比如以下代码</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">bean</span> <span class="attr">name</span>=<span class="string">"impl"</span>  <span class="attr">class</span>=<span class="string">"org.liuyuqi.IndexImpl"</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">bean</span> <span class="attr">name</span>=<span class="string">"impl2"</span> <span class="attr">class</span>=<span class="string">"org.liuyuqi.IndexImpl2"</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">bean</span> <span class="attr">name</span>=<span class="string">"service"</span> <span class="attr">class</span>=<span class="string">"org.liuyuqi.IndexService"</span> /&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>都共同的实现了</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">IndexImpl</span> <span class="keyword">implements</span> <span class="title">IndexDao</span></span></span><br></pre></td></tr></table></figure>
+
+<p>便会出现以下错误</p>
+<p><img src="/2020/03/03/spring/IOC/springIOC1/image-20200303111701725.png" alt></p>
+<p>这时候怎么解决 , 使用spring中的 byName</p>
+</li>
+<li><p>根据名称匹配</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">default-autowire="byName</span><br></pre></td></tr></table></figure>
+
+<p>可以改变bean的名称以及类中set方法的属性让spring辨别</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">&lt;bean name=<span class="string">"indexDao"</span> <span class="class"><span class="keyword">class</span></span>=<span class="string">"org.liuyuqi.IndexImpl"</span>/&gt; </span><br><span class="line">    </span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setIndexDao</span><span class="params">(IndexDao indexDao)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.indexDao = indexDao;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">输出如下</span><br><span class="line">    impl1111</span><br><span class="line">    </span><br><span class="line">    </span><br><span class="line"><span class="keyword">default</span>-autowire=<span class="string">"byName"</span>&gt;</span><br><span class="line">&lt;bean name=<span class="string">"indexDao"</span> <span class="class"><span class="keyword">class</span></span>=<span class="string">"org.liuyuqi.IndexImpl"</span>/&gt;</span><br><span class="line">&lt;bean id=<span class="string">"impl2"</span> <span class="class"><span class="keyword">class</span></span>=<span class="string">"org.liuyuqi.IndexImpl2"</span>/&gt;</span><br><span class="line">&lt;bean id=<span class="string">"service"</span> <span class="class"><span class="keyword">class</span></span>=<span class="string">"org.liuyuqi.IndexService"</span> /&gt; </span><br><span class="line">    </span><br><span class="line">   <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setImpl2</span><span class="params">(IndexDao indexDao)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.indexDao = indexDao;</span><br><span class="line">    &#125;</span><br><span class="line">输出如下</span><br><span class="line">    impl222</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>更自由的定义单独的定义匹配规格 autowire</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">bean</span> <span class="attr">id</span>=<span class="string">"service"</span> <span class="attr">class</span>=<span class="string">"org.liuyuqi.IndexService"</span>  <span class="attr">autowire</span>=<span class="string">"byName"</span>/&gt;</span></span><br></pre></td></tr></table></figure></li>
+</ol>
+
+        </div>
+        
+        
+        
+    </div>
+</div>
+
+
+
+
+
+
+
+
+    
+<div class="card">
+    
+    <div class="card-content article ">
+        
+        <div class="level article-meta is-size-7 is-uppercase is-mobile is-overflow-x-auto">
+            <div class="level-left">
                 <time class="level-item has-text-grey" datetime="2020-02-28T03:25:20.727Z">2020-02-28</time>
                 
                 <div class="level-item">
@@ -391,7 +503,7 @@
                     </p>
                     <a href="/archives">
                         <p class="title has-text-weight-normal">
-                            4
+                            5
                         </p>
                     </a>
                 </div>
@@ -494,6 +606,18 @@
         <article class="media">
             <div class="media-content">
                 <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-03-03T03:49:09.395Z">2020-03-03</time></div>
+                    <a href="/2020/03/03/spring/IOC/springIOC1/" class="title has-link-black-ter is-size-6 has-text-weight-normal">spring/IOC/springIOC1</a>
+                    <p class="is-size-7 is-uppercase">
+                        
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            <div class="media-content">
+                <div class="content">
                     <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-02-28T03:25:20.727Z">2020-02-28</time></div>
                     <a href="/2020/02/28/java%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1/%E5%A4%9A%E6%80%81/" class="title has-link-black-ter is-size-6 has-text-weight-normal">多态</a>
                     <p class="is-size-7 is-uppercase">
@@ -549,6 +673,17 @@
             归档
         </h3>
         <ul class="menu-list">
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2020/03/">
+                <span class="level-start">
+                    <span class="level-item">三月 2020</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
         
         <li>
             <a class="level is-marginless" href="/archives/2020/02/">
@@ -623,6 +758,18 @@
         <article class="media">
             <div class="media-content">
                 <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-03-03T03:49:09.395Z">2020-03-03</time></div>
+                    <a href="/2020/03/03/spring/IOC/springIOC1/" class="title has-link-black-ter is-size-6 has-text-weight-normal">spring/IOC/springIOC1</a>
+                    <p class="is-size-7 is-uppercase">
+                        
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            <div class="media-content">
+                <div class="content">
                     <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-02-28T03:25:20.727Z">2020-02-28</time></div>
                     <a href="/2020/02/28/java%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1/%E5%A4%9A%E6%80%81/" class="title has-link-black-ter is-size-6 has-text-weight-normal">多态</a>
                     <p class="is-size-7 is-uppercase">
@@ -678,6 +825,17 @@
             归档
         </h3>
         <ul class="menu-list">
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2020/03/">
+                <span class="level-start">
+                    <span class="level-item">三月 2020</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
         
         <li>
             <a class="level is-marginless" href="/archives/2020/02/">
